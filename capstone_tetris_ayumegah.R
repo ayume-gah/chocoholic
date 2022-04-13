@@ -297,6 +297,61 @@ datafix <- databaru %>%
 str(datafix)
 is_tibble(datafix) #make sure
 
+
+#grafik 3 moda
+ggplot(datafix, aes(Bulan,Penumpang, color = Moda,group=1)) + 
+  geom_line()+
+  facet_wrap(~Moda, scales = "free_y", ncol = 1)+
+  theme(plot.caption = element_text(size = 8))+
+  labs(x = "Bulan - Tahun", y = "Jumlah Penumpang")+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),  # rotate x axis text
+        plot.title = element_text(hjust = 0.5, vjust = -1),
+        legend.position = "none")
+#####rata2 total penumpang/bulan
+ndatabaru <- databaru %>% 
+  mutate(Penumpang = (Kereta+Pesawat+Kapal)/30) %>%
+  select(-2:-4) 
+#grafik rata2 total 3 moda
+ggplot(ndatabaru, aes(x=Bulan, y=Penumpang,group=1)) +
+  geom_area(fill="light blue") +
+  labs(x = "Tahun-Bulan", y = "Jumlah Total Rata2 Penumpang Moda Transportasi") +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 65, hjust = 1),
+        legend.position = "none")
+  
+  
+#tabel dan grafik covid
+dataco <- co %>%
+  mutate(Kasus.covid = jumlah.rata2.kasus.covid) %>%
+  select(-2)
+dataco$Bulan <- as.character(dataco$Bulan)
+
+ggplot(dataco, aes(Bulan, Kasus.covid, group=1)) +
+  geom_area(fill="orange") +
+  labs(x = "Tahun-Bulan", y = "Jumlah Rata2 Kasus Positif Covid-19") +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 65, hjust = 1),
+        legend.position = "none")
+
+#grafik 3 moda & grafik covid
+ggplot(NULL) +
+  geom_area(data=dataco, mapping=aes(x=Bulan,y=Kasus.covid,group=1),fill="orange",
+            alpha=0.9) + #opacity colour
+  geom_area(data=ndatabaru, mapping=aes(x=Bulan,y=(Penumpang/10),group=1),fill="light blue",
+            alpha=0.4) +
+  labs(x = "Tahun-Bulan",y="") +
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 65, hjust = 1),axis.text.y=element_blank(),
+        legend.position = "none")
+ 
+#grafik linear
+ggplot(dataset,aes(x=dataco$Kasus.covid,y=ndatabaru$Penumpang))+
+  geom_point()+
+  geom_smooth(method="lm",se=T)+
+  labs(x = "Kasus Positif Covid-19 (rata2 per bulan)", y = "Penumpang Moda Transportasi (rata2 per bulan)", subtitle="Regresi Linear") +
+  theme_classic()
+
 #grafik penumpang kereta
 turunka <- function(a,b){
   return1 <- dataka %>% filter(Bulan == a) %>% select(Kereta)
@@ -404,48 +459,3 @@ ggplot(datakp, aes(Bulan, Kapal, color = Kapal, group=1)) +
   annotate(geom = "text",label=paste("-",titik5,"%"),x=13.5,y=55000,color="brown",size=5)+
   annotate(geom = "text",label=paste("-",titik6,"%"),x=14.5,y=30000,color="blue",size=5)+
   annotate(geom = "text",label=paste("-",titik7,"%"),x=19.5,y=47000,color="purple",size=5)
-
-#grafik moda
-ggplot(datafix, aes(Bulan,Penumpang, color = Moda,group=1)) + 
-  geom_line()+
-  facet_wrap(~Moda, scales = "free_y", ncol = 1)+
-  #ggtitle(str_wrap("Seberapa Berpengaruh PSBB dan PPKM Terhadap Jumlah Penumpang Moda Transportasi Indonesia Periode 2020-2022")) +
-  theme(plot.caption = element_text(size = 8))+
-  labs(x = "Bulan - Tahun", y = "Jumlah Penumpang")+
-  theme_classic()+
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),  # rotate x axis text
-        plot.title = element_text(hjust = 0.5, vjust = -1),
-        legend.position = "none")
-#####rata2 total penumpang/bulan
-ndatabaru <- databaru %>% 
-  mutate(Penumpang = (Kereta+Pesawat+Kapal)/30) %>%
-  select(-2:-4) 
-
-ggplot(ndatabaru, aes(x=Bulan, y=Penumpang,group=1)) +
-  geom_area(fill="light blue") +
-  labs(x = "Tahun-Bulan", y = "Jumlah Total Rata2 Penumpang Moda Transportasi") +
-  theme_classic()+
-  theme(axis.text.x = element_text(angle = 65, hjust = 1),
-        legend.position = "none")
-  
-  
-#tabel dan grafik co
-dataco$Bulan <- as.character(dataco$Bulan)
-dataco <- co %>%
-  filter(Bulan!="2022-02-01" & Bulan!="2022-03-01") %>%
-  mutate(Kasus.covid = jumlah.rata2.kasus.covid) %>%
-  select(-2)
-
-ggplot(dataco, aes(Bulan, Kasus.covid, group=1)) +
-  geom_area(fill="orange") +
-  labs(x = "Tahun-Bulan", y = "Jumlah Rata2 Kasus Positif Covid-19") +
-  theme_classic()+
-  theme(axis.text.x = element_text(angle = 65, hjust = 1),
-        legend.position = "none")
-
-#grafik linear
-ggplot(dataset,aes(x=dataco$Kasus.covid,y=ndatabaru$Penumpang))+
-  geom_point()+
-  geom_smooth(method="lm",se=T)+
-  labs(x = "Kasus Positif Covid-19 (rata2 per bulan)", y = "Penumpang Moda Transportasi (rata2 per bulan)", subtitle="Regresi Linear") +
-  theme_classic()
