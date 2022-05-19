@@ -335,127 +335,17 @@ ggplot(dataco, aes(Bulan, Kasus.covid, group=1)) +
         legend.position = "none")
 
 #grafik 3 moda & grafik covid
-ggplot(NULL) +
-  geom_area(data=dataco, mapping=aes(x=Bulan,y=Kasus.covid,group=1),fill="orange",
+ggplot(NULL,mapping = aes(x=Bulan)) +
+  geom_area(data=dataco, mapping=aes(y=Kasus.covid,group=1),fill="orange",
             alpha=0.9) + #opacity colour
-  geom_area(data=ndatabaru, mapping=aes(x=Bulan,y=(Penumpang/10),group=1),fill="light blue",
+  geom_area(data=ndatabaru, mapping=aes(y=(Penumpang/10),group=1),fill="light blue",
             alpha=0.4) +
   labs(x = "Tahun-Bulan",y="") +
   theme_classic()+
   theme(axis.text.x = element_text(angle = 65, hjust = 1),axis.text.y=element_blank(),
         legend.position = "none")
- 
-#grafik linear
-ggplot(dataset,aes(x=dataco$Kasus.covid,y=ndatabaru$Penumpang))+
-  geom_point()+
-  geom_smooth(method="lm",se=T)+
-  labs(x = "Kasus Positif Covid-19 (rata2 per bulan)", y = "Penumpang Moda Transportasi (rata2 per bulan)", subtitle="Regresi Linear") +
-  theme_classic()
 
-#grafik penumpang kereta
-turunka <- function(a,b){
-  return1 <- dataka %>% filter(Bulan == a) %>% select(Kereta)
-  return2 <- dataka %>% filter(Bulan == b) %>% select(Kereta)
-  return(((return2 - return1)/return1)*100)
-}
-
-titik1 <- round(turunka("2020-04","2020-03"),1)
-titik2 <- round(turunka("2020-06","2020-05"),1)*-1
-titik3 <- round(turunka("2020-09","2020-08"),1)
-titik4 <- round(turunka("2020-10","2020-09"),1)*-1
-titik5 <- round(turunka("2021-01","2020-12"),1)
-titik6 <- round(turunka("2021-02","2021-01"),1)
-titik7 <- round(turunka("2021-07","2021-06"),1)
-
-ggplot(dataka, aes(Bulan, Kereta, color = Kereta,group=1)) +
-  geom_line() +
-  labs(x = "Tahun-Bulan", y = "Jumlah Penumpang", title="Jumlah Penumpang Kereta", subtitle="pada Periode 2020-2022") +
-  theme(axis.text.x = element_text(angle = 65, hjust = 1),
-        legend.position = "none")+
-  annotate(geom = "text",label="- PSBB -",x=5,y=7000000,color="red",size=4.5,angle=15)+
-  annotate(geom = "text",label="PSBB transisi",x=7.5,y=9000000,color="orange",size=5)+
-  annotate(geom = "text",label="PSBB ketat",x=9.5,y=8000000,color="red",size=4.7,angle=80)+
-  annotate(geom = "text",label="PSBB transisi 2",x=11.5,y=12000000,color="black",size=4.7)+
-  annotate(geom = "text",label="PPKM Jawa-Bali",x=13.5,y=9000000,color="brown",size=3,angle=60)+
-  annotate(geom = "text",label="- PPKM Mikro -",x=16,y=10000000,color="blue",size=6.5)+
-  annotate(geom = "text",label="PPKM Darurat",x=19,y=11000000,color="purple",size=4.5,angle=90)+
-  annotate(geom = "text",label="-- PPKM Level --",x=22,y=5000000,color="green",size=7)+
-  annotate(geom = "text",label=paste("-",titik1,"%"),x=4.5,y=9000000,color="red",size=5)+
-  annotate(geom = "text",label=paste("+",titik2,"%"),x=6.5,y=12000000,color="orange",size=5)+
-  annotate(geom = "text",label=paste("-",titik3,"%"),x=9.5,y=13000000,color="red",size=5)+
-  annotate(geom = "text",label=paste("+",titik4,"%"),x=10.5,y=14000000,color="black",size=5)+
-  annotate(geom = "text",label=paste("-",titik5,"%"),x=13.5,y=13000000,color="brown",size=5)+
-  annotate(geom = "text",label=paste("-",titik6,"%"),x=14.5,y=14000000,color="blue",size=5)+
-  annotate(geom = "text",label=paste("-",titik7,"%"),x=19.5,y=17000000,color="purple",size=5)
-
-#grafik penumpang pesawat
-turunpl <- function(a,b){
-  return1 <- datapl %>% filter(Bulan == a) %>% select(Pesawat)
-  return2 <- datapl %>% filter(Bulan == b) %>% select(Pesawat)
-  return(((return2 - return1)/return1)*100)
-}
-
-titik1 <- round(turunpl("2020-04","2020-03"),1)
-titik2 <- round(turunpl("2020-06","2020-05"),1)*-1
-titik3 <- round(turunpl("2020-09","2020-08"),1)
-titik4 <- round(turunpl("2020-10","2020-09"),1)*-1
-titik5 <- round(turunpl("2021-01","2020-12"),1)
-titik6 <- round(turunpl("2021-02","2021-01"),1)
-titik7 <- round(turunpl("2021-07","2021-06"),1)
-
-ggplot(datapl, aes(Bulan, Pesawat, color = Pesawat, group=1)) +
-  geom_line() +
-  labs(x = "Tahun-Bulan", y = "Jumlah Penumpang", title="Jumlah Penumpang Pesawat", subtitle="pada Periode 2020-2022") +
-  theme(axis.text.x = element_text(angle = 65, hjust = 1),
-        legend.position = "none")+
-  annotate(geom = "text",label="- PSBB -",x=5,y=300000,color="red",size=4.5,angle=15)+
-  annotate(geom = "text",label="PSBB transisi",x=7.5,y=300000,color="orange",size=5)+
-  annotate(geom = "text",label="PSBB ketat",x=9.5,y=500000,color="red",size=4.7,angle=80)+
-  annotate(geom = "text",label="PSBB transisi 2",x=11.5,y=1100000,color="black",size=4.7)+
-  annotate(geom = "text",label="PPKM Jawa-Bali",x=13.5,y=1500000,color="brown",size=3,angle=60)+
-  annotate(geom = "text",label="- PPKM Mikro -",x=16,y=1000000,color="blue",size=6.5)+
-  annotate(geom = "text",label="PPKM Darurat",x=19,y=1400000,color="purple",size=4.5,angle=90)+
-  annotate(geom = "text",label="-- PPKM Level --",x=22,y=400000,color="green",size=7)+
-  annotate(geom = "text",label=paste("-",titik1,"%"),x=4.5,y=500000,color="red",size=5)+
-  annotate(geom = "text",label=paste("+",titik2,"%"),x=6.5,y=200000,color="orange",size=5)+
-  annotate(geom = "text",label=paste("-",titik3,"%"),x=9.5,y=900000,color="red",size=5)+
-  annotate(geom = "text",label=paste("+",titik4,"%"),x=10.5,y=1000000,color="black",size=5)+
-  annotate(geom = "text",label=paste("-",titik5,"%"),x=13.5,y=900000,color="brown",size=5)+
-  annotate(geom = "text",label=paste("-",titik6,"%"),x=14.5,y=800000,color="blue",size=5)+
-  annotate(geom = "text",label=paste("-",titik7,"%"),x=19.5,y=400000,color="purple",size=5)
-
-#grafik penumpang kapal
-turunkp <- function(a,b){
-  return1 <- datakp %>% filter(Bulan == a) %>% select(Kapal)
-  return2 <- datakp %>% filter(Bulan == b) %>% select(Kapal)
-  return(((return2 - return1)/return1)*100)
-}
-
-titik1 <- round(turunkp("2020-04","2020-03"),1)
-titik2 <- round(turunkp("2020-06","2020-05"),1)*-1
-titik3 <- round(turunkp("2020-09","2020-08"),1)*-1
-titik4 <- round(turunkp("2020-10","2020-09"),1)
-titik5 <- round(turunkp("2021-01","2020-12"),1)
-titik6 <- round(turunkp("2021-02","2021-01"),1)
-titik7 <- round(turunkp("2021-07","2021-06"),1)
-
-ggplot(datakp, aes(Bulan, Kapal, color = Kapal, group=1)) +
-  geom_line() +
-  labs(x = "Tahun-Bulan", y = "Jumlah Penumpang", title="Jumlah Penumpang Kapal", subtitle="pada Periode 2020-2022") +
-  theme(axis.text.x = element_text(angle = 65, hjust = 1),
-        legend.position = "none")+
-  annotate(geom = "text",label="- PSBB -",x=5,y=20000,color="red",size=4.5,angle=15)+
-  annotate(geom = "text",label="PSBB transisi",x=7.5,y=10000,color="orange",size=5)+
-  annotate(geom = "text",label="PSBB ketat",x=9.5,y=20000,color="red",size=4.7,angle=80)+
-  annotate(geom = "text",label="PSBB transisi 2",x=11.5,y=30000,color="black",size=4.7)+
-  annotate(geom = "text",label="PPKM Jawa-Bali",x=13.5,y=65000,color="brown",size=3,angle=60)+
-  annotate(geom = "text",label="- PPKM Mikro -",x=16,y=35000,color="blue",size=6.5)+
-  annotate(geom = "text",label="PPKM Darurat",x=19,y=27000,color="purple",size=4.5,angle=90)+
-  annotate(geom = "text",label="-- PPKM Level --",x=22,y=7000,color="green",size=7)+
-  annotate(geom = "text",label=paste("-",titik1,"%"),x=4.5,y=25000,color="red",size=5)+
-  annotate(geom = "text",label=paste("+",titik2,"%"),x=6.5,y=20000,color="orange",size=5)+
-  annotate(geom = "text",label=paste("-",titik3,"%"),x=9.5,y=40000,color="red",size=5)+
-  annotate(geom = "text",label=paste("+",titik4,"%"),x=10.5,y=25000,color="black",size=5)+
-  annotate(geom = "text",label=paste("-",titik5,"%"),x=13.5,y=55000,color="brown",size=5)+
-  annotate(geom = "text",label=paste("-",titik6,"%"),x=14.5,y=30000,color="blue",size=5)+
-  annotate(geom = "text",label=paste("-",titik7,"%"),x=19.5,y=47000,color="purple",size=5)
+datacoo <- dataco[-c(27),][-c(26),] #hapus baris ke-26 dan 27
+chisq.test(datacoo$Kasus.covid,ndatabaru$Penumpang)
+#hasil chisq test didapat p-value=0.2411. p-value > 5% artinya jumlah penumpang moda trasportasi dan 
+#jumlah kasus positif covid saling berhubungan
